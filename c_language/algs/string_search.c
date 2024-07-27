@@ -6,7 +6,13 @@ int str_search(int length, char* target, char* strings_arr[]);
 int main (void)
 {
     char* strings[] = {"hello", "sparta", "ilias", "test"};
-    str_search(4, "ilias", strings);
+    char* target;
+
+    printf("enter search value: \n");
+    fflush(stdin);
+    scanf("%s", target);
+    str_search(4, target, strings);
+
 }
 
 int str_search(int length, char* target, char* strings_arr[])
