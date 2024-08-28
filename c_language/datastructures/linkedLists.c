@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Node {
+typedef struct lLNode {
     int val;
-    struct Node* next;
+    struct lLNode* next;
 } Node;
 
 Node* listInsert_first(Node *list, int value);
 Node* listInsert_last(Node *node, int val);
 Node* listInsert_at_position(Node *head, int val, int position);
 Node* list_pop(Node **head);
+Node* list_unshift(Node **head);
+int list_search(Node *head, int search_val);
+int delete_node(Node **head, int search_val);
 void displayList(Node *node);
-void* destroy(Node *head);
+void destroy(Node **head);
 
 int main(void){
     
@@ -22,15 +25,18 @@ int main(void){
     listInsert_last(head, 3);
     listInsert_last(head, 4);
     listInsert_at_position(head, 99, 1);
-    displayList(head);
-    Node *poped = list_pop(&head);
+    //int search_position = list_search(head, 4);
+    //printf("list item found at position: %i\n", search_position);
+    //delete_node(&head, 99);
+    //Node *poped = list_pop(&head);
     //Node *poped2 = list_pop(head);
     //Node *poped3 = list_pop(head);
     //Node *poped4 = list_pop(head);
     //Node *poped5 = list_pop(head);
     //printf("\n\npoped node is: %i \n\n", poped->val);
+    //destroy(&head);
     displayList(head);
-    head = destroy(head);
+    if(head == NULL) printf("\n the head is null");
     return 0;
 }
 
@@ -143,16 +149,65 @@ Node* list_pop(Node **head){
 }
 
 /**
+ * @brief returns the first node of the list and reset the head to the next node.
+ * @param Node **head a pointer of the head of the list.
+ * @return Node *unshifted | NULL
+ */
+Node* list_unshift(Node **head){
+    if(*head == NULL) return NULL;
+    Node *unshifted = *head;
+    *head = (*head)->next;
+    return unshifted;
+}
+
+/**
+ * @brief searches the linked list for a specific node value and return its position, in case the value doesn't exist it returns -1;
+ * @param Node *head the head of the list.
+ * @param int search_val the search value.
+ * @return int position | -1
+ */
+int list_search(Node *head, int search_val){
+    if(head == NULL) return -1;
+    int i = 1;
+    for(Node *curr = head; curr != NULL; curr = curr->next){
+        if(curr->val == search_val){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
+int delete_node(Node **head, int search_val){
+    if(*head == NULL) return -1;
+    if((*head)->val == search_val){
+        Node *tmp = *head;
+        *head = (*head)->next;
+        free(tmp);
+        return 1;
+    }
+    for(Node *curr = *head; curr->next != NULL; curr = curr->next){
+        if(curr->next->val == search_val){
+            Node *tmp = curr->next;
+            curr->next = curr->next->next;
+            free(tmp);
+            return 1;
+        }
+    }
+    return -1;
+}
+
+/**
  * @brief this function destroys the linkedlist by deleting all the nodes inside of it by calling free(on_each_node).
  * @param Node *head the head of the list.
  * @return NULL
  */
-void* destroy(Node *head){
-    if(head == NULL) {
-        return NULL;
+void destroy(Node **head){
+    if(*head == NULL) {
+        return;
     };
-    destroy(head->next);
-    printf("destroying node: %i\n", head->val);
-    free(head);
-    return NULL;
+    destroy(&(*head)->next);
+    printf("destroying node: %i\n", (*head)->val);
+    free(*head);
+    *head = NULL;
 }
